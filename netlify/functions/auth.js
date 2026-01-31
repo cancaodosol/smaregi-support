@@ -1,6 +1,11 @@
 const fetch = require('node-fetch');
 
 exports.handler = async (event, context) => {
+  // デバッグログ
+  console.log('Auth function called');
+  console.log('HTTP Method:', event.httpMethod);
+  console.log('Request body:', event.body);
+
   // CORSヘッダー
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -32,7 +37,21 @@ exports.handler = async (event, context) => {
 
   try {
     // リクエストボディをパース
-    const { contractId, clientId, clientSecret, environment } = JSON.parse(event.body);
+    let body;
+    try {
+      body = JSON.parse(event.body || '{}');
+    } catch (parseError) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({
+          success: false,
+          error: 'リクエストボディのパースに失敗しました: ' + parseError.message
+        })
+      };
+    }
+
+    const { contractId, clientId, clientSecret, environment } = body;
 
     // バリデーション
     if (!contractId || !clientId || !clientSecret || !environment) {
@@ -41,7 +60,13 @@ exports.handler = async (event, context) => {
         headers,
         body: JSON.stringify({
           success: false,
-          error: '契約ID、クライアントID、クライアントシークレット、環境を入力してください。'
+          error: '契約ID、クライアントID、クライアントシークレット、環境を入力してください。',
+          received: {
+            contractId: !!contractId,
+            clientId: !!clientId,
+            clientSecret: !!clientSecret,
+            environment: !!environment
+          }
         })
       };
     }
@@ -108,7 +133,8 @@ exports.handler = async (event, context) => {
       headers,
       body: JSON.stringify({
         success: false,
-        error: 'サーバーエラーが発生しました。'
+        error: 'サーバーエラーが発生しました。',
+        details: error.message
       })
     };
   }
