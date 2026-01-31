@@ -37,7 +37,7 @@ Authorization: Bearer {{ mainToken }}
 
 ```http
 # @name mainLogin
-POST https://id.smaregi.jp/app/sup972h3/token
+POST https://id.smaregi.jp/app/sfj222x3/token
 Authorization: Basic {{ mainBasic }}
 Content-Type: application/x-www-form-urlencoded
 
@@ -49,75 +49,49 @@ grant_type=client_credentials&scope=pos.customers:read pos.transactions:read pos
 ## 商品情報の取得
 
 ```http
-GET https://api.smaregi.jp/sup972h3/pos/products?fields=productId,productName,displayFlag
+GET https://api.smaregi.jp/sfj222x3/pos/products?fields=categoryId,productId,productName,displayFlag&category_id=9
 Authorization: Bearer {{ mainToken }}
 ```
 
 ## グループ情報の取得
 
 ```http
-GET https://api.smaregi.jp/sup972h3/pos/categories
+GET https://api.smaregi.jp/sfj222x3/pos/categories
 Authorization: Bearer {{ mainToken }}
 ```
 
 ## 商品情報の更新
 
 ```http
-PATCH https://api.smaregi.jp/sup972h3/pos/products/bulk
+PATCH https://api.smaregi.jp/sfj222x3/pos/products/bulk
 Authorization: Bearer {{ mainToken }}
 Content-Type: application/json
 
 {
     "products": [
         {
-            "productId": "9",
-            "productName": "ViVANI(ヴィヴァーニ)　ダークチョコレート オレンジ",
-            "displayFlag": "1"
+            "categoryId": "9",
+            "productId": "106",
+            "productName": "こしあんぱん",
+            "displayFlag": "0"
         },
         {
-            "productId": "10",
-            "productName": "ViVANI(ヴィヴァーニ)　エーデルビター クランベリー",
-            "displayFlag": "1"
+            "categoryId": "9",
+            "productId": "70",
+            "productName": "米粉クリームパン",
+            "displayFlag": "0"
         },
         {
-            "productId": "6",
-            "productName": "ゆにわの生はちみつ とち（小）200g（ピッチャー）",
-            "displayFlag": "1"
+            "categoryId": "9",
+            "productId": "72",
+            "productName": "米粉カレーパン",
+            "displayFlag": "0"
         },
         {
-            "productId": "7",
-            "productName": "地球家族　マカ 200g",
-            "displayFlag": "1"
-        },
-        {
-            "productId": "4",
-            "productName": "【コーヒー豆】最澄ブレンド",
-            "displayFlag": "1"
-        },
-        {
-            "productId": "2",
-            "productName": "【コーヒー豆】最澄ブレンド",
-            "displayFlag": "1"
-        },
-        {
-            "productId": "5",
-            "productName": "【コーヒー豆】最澄ブレンド",
-            "displayFlag": "1"
-        },
-        {
-            "productId": "3",
-            "productName": "【コーヒー豆】最澄ブレンド",
-            "displayFlag": "1"
-        },
-        {
-            "productId": "8",
-            "productName": "ハーブ紅茶　聖バジル紅茶（15g）",
-            "displayFlag": "1"
-        },
-        {
-            "productId": "1",
-            "productName": "ゆにわの寝具　織温-orion-「ハーフケット」1",
-            "displayFlag": "1"
+            "categoryId": "9",
+            "productId": "79",
+            "productName": "米粉つぶあんぱん",
+            "displayFlag": "0"
         }
     ],
     "callbackUrl": "https://localhost/pospos"

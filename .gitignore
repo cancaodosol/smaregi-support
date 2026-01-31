@@ -1,1 +1,20 @@
+# IDE
 .vscode/settings.json
+
+# Dependencies
+node_modules/
+
+# Netlify
+.netlify/
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db

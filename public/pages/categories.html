@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>部門一覧 - スマレジサポート</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <!-- ヘッダー -->
+  <header class="bg-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-gray-800">部門一覧</h1>
+      <div class="flex items-center space-x-4">
+        <a href="/pages/products.html" class="text-blue-600 hover:text-blue-800">商品一覧</a>
+        <button id="logout-button" class="text-gray-600 hover:text-gray-800">ログアウト</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <!-- メッセージエリア -->
+    <div id="error-message" class="hidden"></div>
+    <div id="success-message" class="hidden"></div>
+
+    <!-- 検索・アクション -->
+    <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <!-- 検索 -->
+        <div class="flex-1 min-w-[200px]">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="部門名・部門コードで検索"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <!-- アクション -->
+        <div class="flex items-center space-x-2">
+          <span id="change-count" class="text-sm text-gray-600 font-medium"></span>
+          <button
+            id="reload-button"
+            class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md transition duration-200"
+          >
+            再読み込み
+          </button>
+          <button
+            id="apply-button"
+            disabled
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition duration-200 opacity-50 cursor-not-allowed"
+          >
+            反映
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 部門テーブル -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-100">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                端末表示
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                部門コード
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                部門ID
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                部門名
+              </th>
+            </tr>
+          </thead>
+          <tbody id="categories-tbody" class="bg-white divide-y divide-gray-200">
+            <!-- JavaScriptで動的に生成 -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ローディング -->
+    <div id="loading" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-8 flex flex-col items-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+        <p class="text-gray-700 font-medium">読み込み中...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- JavaScriptファイル読み込み -->
+  <script src="../js/config.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/categories-page.js"></script>
+</body>
+</html>

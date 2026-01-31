@@ -1,0 +1,23 @@
+{
+  "name": "smaregi-support",
+  "version": "1.0.0",
+  "description": "スマレジ商品端末表示切替アプリ",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step required'",
+    "deploy": "netlify deploy --prod"
+  },
+  "keywords": [
+    "smaregi",
+    "pos",
+    "product-management"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  }
+}

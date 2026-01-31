@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>スマレジAPI接続設定 - スマレジサポート</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+  <div class="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">スマレジサポート</h1>
+      <p class="text-gray-600">商品・部門 端末表示切替アプリ</p>
+    </div>
+
+    <!-- エラーメッセージ -->
+    <div id="error-message" class="hidden"></div>
+
+    <!-- ログインフォーム -->
+    <form id="login-form" class="space-y-6">
+      <!-- 契約ID -->
+      <div>
+        <label for="contract-id" class="block text-sm font-medium text-gray-700 mb-2">
+          契約ID <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          id="contract-id"
+          name="contract-id"
+          required
+          placeholder="例: sb_skx467b2"
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <p class="text-xs text-gray-500 mt-1">スマレジ管理画面から取得した契約IDを入力してください</p>
+      </div>
+
+      <!-- クライアントID -->
+      <div>
+        <label for="client-id" class="block text-sm font-medium text-gray-700 mb-2">
+          クライアントID <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          id="client-id"
+          name="client-id"
+          required
+          placeholder="クライアントID"
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <!-- クライアントシークレット -->
+      <div>
+        <label for="client-secret" class="block text-sm font-medium text-gray-700 mb-2">
+          クライアントシークレット <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="password"
+          id="client-secret"
+          name="client-secret"
+          required
+          placeholder="クライアントシークレット"
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <div class="flex items-center mt-2">
+          <input
+            type="checkbox"
+            id="show-secret"
+            class="mr-2"
+          />
+          <label for="show-secret" class="text-sm text-gray-600 cursor-pointer">パスワードを表示</label>
+        </div>
+      </div>
+
+      <!-- 環境選択 -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          環境 <span class="text-red-500">*</span>
+        </label>
+        <div class="space-y-2">
+          <label class="flex items-center p-3 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
+            <input
+              type="radio"
+              name="environment"
+              value="dev"
+              checked
+              class="mr-3 text-blue-600"
+            />
+            <div>
+              <div class="font-medium text-gray-800">サンドボックス（開発環境）</div>
+              <div class="text-xs text-gray-500">テスト用の環境です</div>
+            </div>
+          </label>
+          <label class="flex items-center p-3 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50">
+            <input
+              type="radio"
+              name="environment"
+              value="prod"
+              class="mr-3 text-blue-600"
+            />
+            <div>
+              <div class="font-medium text-gray-800">本番環境</div>
+              <div class="text-xs text-gray-500">実際のデータを扱います</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- ボタン -->
+      <button
+        type="submit"
+        id="login-button"
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition duration-200"
+      >
+        接続テスト
+      </button>
+    </form>
+
+    <!-- ローディング -->
+    <div id="loading" class="hidden text-center mt-4">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <p class="text-gray-600 mt-2">接続中...</p>
+    </div>
+  </div>
+
+  <!-- JavaScriptファイル読み込み -->
+  <script src="../js/config.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth.js"></script>
+
+  <script>
+    // パスワード表示/非表示の切り替え
+    document.getElementById('show-secret').addEventListener('change', function(e) {
+      const secretInput = document.getElementById('client-secret');
+      secretInput.type = e.target.checked ? 'text' : 'password';
+    });
+
+    // ログイン処理
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      // エラーメッセージをクリア
+      Utils.hideMessage('error-message');
+
+      // 入力値を取得
+      const contractId = document.getElementById('contract-id').value.trim();
+      const clientId = document.getElementById('client-id').value.trim();
+      const clientSecret = document.getElementById('client-secret').value.trim();
+      const environment = document.querySelector('input[name="environment"]:checked').value;
+
+      // バリデーション
+      if (!contractId || !clientId || !clientSecret) {
+        Utils.showError('すべての項目を入力してください。');
+        return;
+      }
+
+      // ボタンを無効化してローディング表示
+      Utils.setButtonDisabled('login-button', true, '接続中...');
+      Utils.showLoading(true);
+
+      try {
+        // ログイン処理
+        const result = await Auth.login(contractId, clientId, clientSecret, environment);
+
+        if (result.success) {
+          // 成功したら商品一覧画面へ遷移
+          window.location.href = '/pages/products.html';
+        } else {
+          // エラー表示
+          Utils.showError(result.error);
+          Utils.setButtonDisabled('login-button', false, '接続テスト');
+        }
+      } catch (error) {
+        Utils.showError('接続に失敗しました。入力内容を確認してください。');
+        Utils.setButtonDisabled('login-button', false, '接続テスト');
+      } finally {
+        Utils.showLoading(false);
+      }
+    });
+
+    // ページロード時にログイン済みかチェック
+    window.addEventListener('DOMContentLoaded', function() {
+      if (Auth.isLoggedIn()) {
+        // すでにログイン済みの場合は商品一覧画面へ
+        window.location.href = '/pages/products.html';
+      }
+    });
+  </script>
+</body>
+</html>
