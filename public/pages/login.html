@@ -179,8 +179,33 @@
       }
     });
 
-    // ページロード時にログイン済みかチェック
+    // ページロード時の処理
     window.addEventListener('DOMContentLoaded', function() {
+      // GETパラメータから認証情報を取得して自動セット
+      const urlParams = new URLSearchParams(window.location.search);
+
+      const contractIdParam = urlParams.get('contract-id');
+      const clientIdParam = urlParams.get('client-id');
+      const clientSecretParam = urlParams.get('client-secret');
+      const environmentParam = urlParams.get('environment');
+
+      if (contractIdParam) {
+        document.getElementById('contract-id').value = contractIdParam;
+      }
+      if (clientIdParam) {
+        document.getElementById('client-id').value = clientIdParam;
+      }
+      if (clientSecretParam) {
+        document.getElementById('client-secret').value = clientSecretParam;
+      }
+      if (environmentParam && (environmentParam === 'dev' || environmentParam === 'prod')) {
+        const radioButton = document.querySelector(`input[name="environment"][value="${environmentParam}"]`);
+        if (radioButton) {
+          radioButton.checked = true;
+        }
+      }
+
+      // ログイン済みかチェック
       if (Auth.isLoggedIn()) {
         // すでにログイン済みの場合は商品一覧画面へ
         window.location.href = '/pages/products.html';
