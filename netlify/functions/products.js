@@ -57,6 +57,7 @@ exports.handler = async (event, context) => {
       apiUrl = `${apiBase}/pos/products/bulk`;
       method = 'PATCH';
       const requestData = JSON.parse(event.body);
+      requestData.callbackUrl = "https://localhost/pospos";
       body = JSON.stringify(requestData);
 
     } else {
