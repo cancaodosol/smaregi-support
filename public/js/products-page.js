@@ -235,7 +235,7 @@ class ProductsPage {
 
     // アイコン
     const tdIcon = document.createElement('td');
-    tdIcon.className = 'px-6 py-4';
+    tdIcon.className = '';
     const imageUrl = this.productImages.get(product.productId);
     if (imageUrl) {
       const img = document.createElement('img');
@@ -252,7 +252,7 @@ class ProductsPage {
 
     // 商品名
     const tdName = document.createElement('td');
-    tdName.className = 'px-6 py-4 font-medium';
+    tdName.className = 'py-4 font-medium';
     tdName.textContent = product.productName || '-';
     tr.appendChild(tdName);
 
