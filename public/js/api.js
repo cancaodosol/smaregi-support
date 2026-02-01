@@ -21,6 +21,19 @@ class SmaregiAPI {
   }
 
   /**
+   * 商品画像一覧を取得
+   * @param {Object} params クエリパラメータ
+   * @returns {Promise<Array>} 商品画像一覧
+   */
+  async getProductImages(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    const url = `${CONFIG.API_ENDPOINTS.PRODUCT_IMAGES}${queryString ? '?' + queryString : ''}`;
+
+    const response = await this.request(url, 'GET');
+    return response;
+  }
+
+  /**
    * 商品を一括更新
    * @param {Array} products 商品リスト
    * @returns {Promise<Object>} レスポンス

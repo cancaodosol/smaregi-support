@@ -49,7 +49,14 @@ grant_type=client_credentials&scope=pos.customers:read pos.transactions:read pos
 ## 商品情報の取得
 
 ```http
-GET https://api.smaregi.jp/sfj222x3/pos/products?fields=categoryId,productId,productName,displayFlag&category_id=9
+GET https://api.smaregi.jp/sfj222x3/pos/products?category_id=9
+Authorization: Bearer {{ mainToken }}
+```
+
+## 商品画像情報の取得
+
+```http
+GET https://api.smaregi.jp/sfj222x3/pos/products/images
 Authorization: Bearer {{ mainToken }}
 ```
 
@@ -57,6 +64,12 @@ Authorization: Bearer {{ mainToken }}
 
 ```http
 GET https://api.smaregi.jp/sfj222x3/pos/categories
+Authorization: Bearer {{ mainToken }}
+```
+
+## グループ情報の更新
+```http
+PATCH https://api.smaregi.jp/sfj222x3/pos/categories
 Authorization: Bearer {{ mainToken }}
 ```
 

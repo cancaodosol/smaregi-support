@@ -8,6 +8,7 @@ class ProductsPage {
     this.changedProducts = new Set();
     this.originalProducts = new Map();
     this.searchText = '';
+    this.productImages = new Map(); // productId → 画像URLのマッピング
   }
 
   /**
@@ -31,8 +32,14 @@ class ProductsPage {
     try {
       Utils.showLoading(true);
 
-      // 部門一覧を取得
-      this.categories = await this.api.getCategories();
+      // 部門一覧と商品画像を並列取得
+      await Promise.all([
+        this.api.getCategories().then(categories => {
+          this.categories = categories;
+        }),
+        this.loadProductImages()
+      ]);
+
       this.renderCategoryTabs();
 
       // 最初の部門または全商品を表示
@@ -48,6 +55,24 @@ class ProductsPage {
       Utils.showError('データの読み込みに失敗しました。' + error.message);
     } finally {
       Utils.showLoading(false);
+    }
+  }
+
+  /**
+   * 商品画像一覧を読み込み
+   */
+  async loadProductImages() {
+    try {
+      const images = await this.api.getProductImages();
+      this.productImages.clear();
+      if (images && Array.isArray(images)) {
+        images.forEach(image => {
+          this.productImages.set(image.productId, image.url);
+        });
+      }
+    } catch (error) {
+      console.error('Product images load error:', error);
+      // エラーが発生しても画像なしで続行
     }
   }
 
@@ -163,7 +188,7 @@ class ProductsPage {
     if (!filteredProducts || filteredProducts.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+          <td colspan="6" class="px-6 py-4 text-center text-gray-500">
             商品が見つかりませんでした
           </td>
         </tr>
@@ -218,6 +243,23 @@ class ProductsPage {
     tdId.className = 'px-6 py-4 text-sm text-gray-600';
     tdId.textContent = product.productId || '-';
     tr.appendChild(tdId);
+
+    // アイコン
+    const tdIcon = document.createElement('td');
+    tdIcon.className = 'px-6 py-4';
+    const imageUrl = this.productImages.get(product.productId);
+    if (imageUrl) {
+      const img = document.createElement('img');
+      img.src = imageUrl;
+      img.alt = product.productName || '商品画像';
+      img.className = 'w-12 h-12 object-cover rounded';
+      img.loading = 'lazy';
+      img.onerror = () => {
+        img.style.display = 'none';
+      };
+      tdIcon.appendChild(img);
+    }
+    tr.appendChild(tdIcon);
 
     // 商品名
     const tdName = document.createElement('td');

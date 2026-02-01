@@ -20,6 +20,7 @@ const CONFIG = {
   API_ENDPOINTS: {
     AUTH: '/.netlify/functions/auth',
     PRODUCTS: '/.netlify/functions/products',
+    PRODUCT_IMAGES: '/.netlify/functions/product-images',
     CATEGORIES: '/.netlify/functions/categories'
   },
 
