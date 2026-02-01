@@ -84,6 +84,7 @@ class ProductsPage {
       Utils.showLoading(true);
 
       const params = {};
+      params.sort = 'displaySequence';
       if (this.selectedCategoryId) {
         params.category_id = this.selectedCategoryId;
       }
