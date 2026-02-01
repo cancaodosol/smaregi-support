@@ -189,7 +189,7 @@ class ProductsPage {
     if (!filteredProducts || filteredProducts.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+          <td colspan="4" class="px-6 py-4 text-center text-gray-500">
             商品が見つかりませんでした
           </td>
         </tr>
@@ -232,18 +232,6 @@ class ProductsPage {
     });
     tdCheckbox.appendChild(checkbox);
     tr.appendChild(tdCheckbox);
-
-    // 商品コード
-    const tdCode = document.createElement('td');
-    tdCode.className = 'px-6 py-4 font-mono text-sm';
-    tdCode.textContent = product.productCode || '-';
-    tr.appendChild(tdCode);
-
-    // 商品ID
-    const tdId = document.createElement('td');
-    tdId.className = 'px-6 py-4 text-sm text-gray-600';
-    tdId.textContent = product.productId || '-';
-    tr.appendChild(tdId);
 
     // アイコン
     const tdIcon = document.createElement('td');
