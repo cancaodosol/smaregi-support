@@ -97,7 +97,7 @@ exports.handler = async (event, context) => {
         'Authorization': `Basic ${basicAuth}`,
         'Content-Type': 'application/x-www-form-urlencoded'
       },
-      body: 'grant_type=client_credentials&scope=pos.products:read pos.products:write pos.categories:read pos.categories:write'
+      body: 'grant_type=client_credentials&scope=pos.products:read pos.products:write'
     });
 
     const data = await response.json();
