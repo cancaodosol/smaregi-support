@@ -76,7 +76,7 @@ class CategoriesPage {
     if (!filteredCategories || filteredCategories.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+          <td colspan="2" class="px-6 py-4 text-center text-gray-500">
             部門が見つかりませんでした
           </td>
         </tr>
@@ -119,18 +119,6 @@ class CategoriesPage {
     });
     tdCheckbox.appendChild(checkbox);
     tr.appendChild(tdCheckbox);
-
-    // 部門コード
-    const tdCode = document.createElement('td');
-    tdCode.className = 'px-6 py-4 font-mono text-sm';
-    tdCode.textContent = category.categoryCode || '-';
-    tr.appendChild(tdCode);
-
-    // 部門ID
-    const tdId = document.createElement('td');
-    tdId.className = 'px-6 py-4 text-sm text-gray-600';
-    tdId.textContent = category.categoryId || '-';
-    tr.appendChild(tdId);
 
     // 部門名
     const tdName = document.createElement('td');
