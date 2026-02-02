@@ -29,7 +29,7 @@ class CategoriesPage {
     try {
       Utils.showLoading(true);
 
-      this.categories = await this.api.getCategories();
+      this.categories = await this.api.getCategories({ sort: 'displaySequence' });
 
       // オリジナルの状態を保存
       this.originalCategories.clear();
