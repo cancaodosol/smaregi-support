@@ -34,7 +34,7 @@ class ProductsPage {
 
       // 部門一覧と商品画像を並列取得
       await Promise.all([
-        this.api.getCategories().then(categories => {
+        this.api.getCategories({ sort: 'displaySequence' }).then(categories => {
           this.categories = categories;
         }),
         this.loadProductImages()
