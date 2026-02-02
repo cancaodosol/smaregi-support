@@ -69,8 +69,13 @@ Authorization: Bearer {{ mainToken }}
 
 ## グループ情報の更新
 ```http
-PATCH https://api.smaregi.jp/sfj222x3/pos/categories
+PATCH https://api.smaregi.jp/sfj222x3/pos/categories/6
 Authorization: Bearer {{ mainToken }}
+Content-Type: application/json
+
+{
+    "displayFlag" : "1"
+}
 ```
 
 ## 商品情報の更新

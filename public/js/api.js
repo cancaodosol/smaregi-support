@@ -59,7 +59,7 @@ class SmaregiAPI {
   }
 
   /**
-   * 部門を一括更新
+   * 部門を更新（1件ずつ個別に更新）
    * @param {Array} categories 部門リスト
    * @returns {Promise<Object>} レスポンス
    */
@@ -67,6 +67,13 @@ class SmaregiAPI {
     const response = await this.request(CONFIG.API_ENDPOINTS.CATEGORIES, 'PATCH', {
       categories
     });
+
+    // エラーがあれば例外をスロー
+    if (response.errors && response.errors.length > 0) {
+      const failedIds = response.errors.map(e => e.categoryId).join(', ');
+      throw new Error(`一部の部門の更新に失敗しました (ID: ${failedIds})`);
+    }
+
     return response;
   }
 

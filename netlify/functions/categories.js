@@ -53,12 +53,49 @@ exports.handler = async (event, context) => {
       body = null;
 
     } else if (event.httpMethod === 'PATCH') {
-      // 部門一括更新
-      // 注: スマレジAPIに部門一括更新のエンドポイントがない場合は個別更新が必要
-      apiUrl = `${apiBase}/pos/categories/bulk`;
-      method = 'PATCH';
+      // 部門を1件ずつ更新（スマレジAPIには部門一括更新エンドポイントがない）
       const requestData = JSON.parse(event.body);
-      body = JSON.stringify(requestData);
+      const categories = requestData.categories || [];
+
+      const results = [];
+      const errors = [];
+
+      for (const category of categories) {
+        try {
+          const categoryApiUrl = `${apiBase}/pos/categories/${category.categoryId}`;
+          const response = await fetch(categoryApiUrl, {
+            method: 'PATCH',
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              displayFlag: category.displayFlag
+            })
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            results.push({ categoryId: category.categoryId, success: true, data });
+          } else {
+            errors.push({ categoryId: category.categoryId, success: false, error: data });
+          }
+        } catch (error) {
+          errors.push({ categoryId: category.categoryId, success: false, error: error.message });
+        }
+      }
+
+      return {
+        statusCode: errors.length > 0 ? 207 : 200,
+        headers,
+        body: JSON.stringify({
+          success: errors.length === 0,
+          results,
+          errors
+        })
+      };
 
     } else {
       return {
@@ -71,7 +108,7 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // スマレジAPIにリクエスト
+    // スマレジAPIにリクエスト（GET時のみ到達）
     const response = await fetch(apiUrl, {
       method,
       headers: {
