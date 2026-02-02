@@ -76,7 +76,7 @@ class CategoriesPage {
     if (!filteredCategories || filteredCategories.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="2" class="px-6 py-4 text-center text-gray-500">
+          <td colspan="2" class="px-4 py-8 text-center text-gray-500 text-sm
             部門が見つかりませんでした
           </td>
         </tr>
@@ -108,7 +108,7 @@ class CategoriesPage {
 
     // チェックボックス
     const tdCheckbox = document.createElement('td');
-    tdCheckbox.className = 'px-6 py-4';
+    tdCheckbox.className = 'px-4 py-2';
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.className = 'w-5 h-5 text-blue-600';
@@ -122,7 +122,7 @@ class CategoriesPage {
 
     // 部門名
     const tdName = document.createElement('td');
-    tdName.className = 'px-6 py-4 font-medium';
+    tdName.className = 'px-4 py-2 text-sm';
     tdName.textContent = category.categoryName || '-';
     tr.appendChild(tdName);
 

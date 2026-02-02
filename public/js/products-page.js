@@ -144,17 +144,19 @@ class ProductsPage {
    */
   createTab(id, name, categoryId) {
     const tab = document.createElement('button');
-    tab.className = 'px-4 py-2 rounded-t-lg font-medium transition-colors';
     tab.textContent = name;
     tab.dataset.categoryId = categoryId;
 
     const isActive = (categoryId === null && this.selectedCategoryId === null) ||
                      (categoryId === this.selectedCategoryId);
 
+    // ベーススタイル
+    const baseClass = 'px-5 py-3 text-sm font-medium transition-all duration-200 border-b-2 whitespace-nowrap';
+
     if (isActive) {
-      tab.classList.add('bg-blue-600', 'text-white');
+      tab.className = `${baseClass} text-blue-600 border-blue-600`;
     } else {
-      tab.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+      tab.className = `${baseClass} text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300`;
     }
 
     tab.addEventListener('click', () => {
@@ -189,7 +191,7 @@ class ProductsPage {
     if (!filteredProducts || filteredProducts.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+          <td colspan="4" class="px-4 py-8 text-center text-gray-500 text-sm
             商品が見つかりませんでした
           </td>
         </tr>
@@ -221,7 +223,7 @@ class ProductsPage {
 
     // チェックボックス
     const tdCheckbox = document.createElement('td');
-    tdCheckbox.className = 'px-6 py-4';
+    tdCheckbox.className = 'px-4 py-2';
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.className = 'w-5 h-5 text-blue-600';
@@ -235,13 +237,13 @@ class ProductsPage {
 
     // アイコン
     const tdIcon = document.createElement('td');
-    tdIcon.className = '';
+    tdIcon.className = 'px-4 py-2';
     const imageUrl = this.productImages.get(product.productId);
     if (imageUrl) {
       const img = document.createElement('img');
       img.src = imageUrl;
       img.alt = product.productName || '商品画像';
-      img.className = 'w-12 h-12 object-cover rounded';
+      img.className = 'w-10 h-10 object-cover rounded';
       img.loading = 'lazy';
       img.onerror = () => {
         img.style.display = 'none';
@@ -252,13 +254,13 @@ class ProductsPage {
 
     // 商品名
     const tdName = document.createElement('td');
-    tdName.className = 'py-4 font-medium';
+    tdName.className = 'px-4 py-2 text-sm';
     tdName.textContent = product.productName || '-';
     tr.appendChild(tdName);
 
     // 価格
     const tdPrice = document.createElement('td');
-    tdPrice.className = 'px-6 py-4 text-right';
+    tdPrice.className = 'px-4 py-2 text-right text-sm';
     tdPrice.textContent = product.price ? `¥${Utils.formatNumber(product.price)}` : '-';
     tr.appendChild(tdPrice);
 
