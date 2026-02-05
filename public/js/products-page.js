@@ -2,7 +2,8 @@
 class ProductsPage {
   constructor() {
     this.api = new SmaregiAPI();
-    this.products = [];
+    this.allProducts = [];      // 全商品データ（一括取得）
+    this.products = [];         // 表示用商品（フィルタリング結果）
     this.categories = [];
     this.selectedCategoryId = null;
     this.changedProducts = new Set();
@@ -32,12 +33,13 @@ class ProductsPage {
     try {
       Utils.showLoading(true);
 
-      // 部門一覧と商品画像を並列取得
+      // 部門一覧、商品画像、全商品を並列取得
       await Promise.all([
         this.api.getCategories({ sort: 'displaySequence' }).then(categories => {
           this.categories = categories;
         }),
-        this.loadProductImages()
+        this.loadProductImages(),
+        this.loadAllProducts()
       ]);
 
       this.renderCategoryTabs();
@@ -47,8 +49,8 @@ class ProductsPage {
         this.selectedCategoryId = this.categories[0].categoryId;
       }
 
-      // 商品一覧を取得
-      await this.loadProducts();
+      // 部門でフィルタリングして表示
+      this.filterAndDisplayProducts();
 
     } catch (error) {
       console.error('Data load error:', error);
@@ -77,23 +79,16 @@ class ProductsPage {
   }
 
   /**
-   * 商品一覧を読み込み
+   * 全商品を一括で読み込み（API呼び出しは初回のみ）
    */
-  async loadProducts() {
+  async loadAllProducts() {
     try {
-      Utils.showLoading(true);
-
-      const params = {};
-      params.sort = 'displaySequence';
-      if (this.selectedCategoryId) {
-        params.category_id = this.selectedCategoryId;
-      }
-
-      this.products = await this.api.getProducts(params);
+      // 全商品を取得（category_idは指定しない）
+      this.allProducts = await this.api.getProducts({ sort: 'displaySequence' });
 
       // オリジナルの状態を保存
       this.originalProducts.clear();
-      this.products.forEach(product => {
+      this.allProducts.forEach(product => {
         this.originalProducts.set(product.productId, {
           ...product
         });
@@ -102,15 +97,30 @@ class ProductsPage {
       // 変更をリセット
       this.changedProducts.clear();
 
-      // 商品一覧を表示
-      this.renderProducts();
-
     } catch (error) {
       console.error('Products load error:', error);
       Utils.showError('商品一覧の読み込みに失敗しました。' + error.message);
-    } finally {
-      Utils.showLoading(false);
+      throw error;
     }
+  }
+
+  /**
+   * 選択中の部門でフィルタリングして表示（API呼び出しなし）
+   */
+  filterAndDisplayProducts() {
+    // 部門でフィルタリング
+    if (this.selectedCategoryId === null) {
+      // 全商品表示
+      this.products = [...this.allProducts];
+    } else {
+      // 選択された部門の商品のみ
+      this.products = this.allProducts.filter(
+        product => product.categoryId === this.selectedCategoryId
+      );
+    }
+
+    // 商品一覧を表示
+    this.renderProducts();
   }
 
   /**
@@ -162,7 +172,7 @@ class ProductsPage {
     tab.addEventListener('click', () => {
       this.selectedCategoryId = categoryId;
       this.renderCategoryTabs();
-      this.loadProducts();
+      this.filterAndDisplayProducts();  // API呼び出しなしでフィルタリング
     });
 
     return tab;
@@ -272,13 +282,16 @@ class ProductsPage {
    */
   onCheckboxChange(productId, isChecked) {
     const product = this.products.find(p => p.productId === productId);
-    if (!product) return;
+    const allProduct = this.allProducts.find(p => p.productId === productId);
+    if (!product || !allProduct) return;
 
     const original = this.originalProducts.get(productId);
     const originalDisplayFlag = original.displayFlag === '1' || original.displayFlag === 1;
 
-    // displayFlagを更新
-    product.displayFlag = isChecked ? '1' : '0';
+    // displayFlagを更新（表示用とマスターデータの両方）
+    const newDisplayFlag = isChecked ? '1' : '0';
+    product.displayFlag = newDisplayFlag;
+    allProduct.displayFlag = newDisplayFlag;
 
     // オリジナルと比較
     if (isChecked !== originalDisplayFlag) {
@@ -354,12 +367,24 @@ class ProductsPage {
       });
 
       // APIに送信
-      const result = await this.api.updateProducts(productsToUpdate);
+      await this.api.updateProducts(productsToUpdate);
 
       Utils.showSuccess(CONFIG.MESSAGES.UPDATE_SUCCESS, 'success-message');
 
-      // 商品一覧を再読み込み
-      await this.loadProducts();
+      // ローカルで状態を更新（API再取得なし）
+      this.changedProducts.forEach(productId => {
+        const product = this.allProducts.find(p => p.productId === productId);
+        if (product) {
+          // オリジナルの状態を現在の値で更新
+          this.originalProducts.set(productId, { ...product });
+        }
+      });
+
+      // 変更をクリア
+      this.changedProducts.clear();
+
+      // 表示を更新
+      this.filterAndDisplayProducts();
 
     } catch (error) {
       console.error('Update error:', error);
@@ -402,8 +427,16 @@ class ProductsPage {
     // リロードボタン
     const reloadButton = document.getElementById('reload-button');
     if (reloadButton) {
-      reloadButton.addEventListener('click', () => {
-        this.loadProducts();
+      reloadButton.addEventListener('click', async () => {
+        try {
+          Utils.showLoading(true);
+          await this.loadAllProducts();
+          this.filterAndDisplayProducts();
+        } catch (error) {
+          console.error('Reload error:', error);
+        } finally {
+          Utils.showLoading(false);
+        }
       });
     }
   }
