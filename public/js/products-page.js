@@ -65,7 +65,7 @@ class ProductsPage {
    */
   async loadProductImages() {
     try {
-      const images = await this.api.getProductImages();
+      const images = await this.api.getProductImages({ limit: 150 });
       this.productImages.clear();
       if (images && Array.isArray(images)) {
         images.forEach(image => {
@@ -84,7 +84,7 @@ class ProductsPage {
   async loadAllProducts() {
     try {
       // 全商品を取得（category_idは指定しない）
-      this.allProducts = await this.api.getProducts({ sort: 'displaySequence' });
+      this.allProducts = await this.api.getProducts({ sort: 'displaySequence', limit: 150 });
 
       // オリジナルの状態を保存
       this.originalProducts.clear();
