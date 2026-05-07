@@ -139,10 +139,11 @@ class ProductsPage {
     // 各部門タブ
     if (this.categories && this.categories.length > 0) {
       this.categories.forEach(category => {
-        const tab = this.createTab(
+          const tab = this.createTab(
           category.categoryId,
           category.categoryName,
-          category.categoryId
+          category.categoryId,
+          category.displayFlag
         );
         container.appendChild(tab);
       });
@@ -152,7 +153,7 @@ class ProductsPage {
   /**
    * タブ要素を作成
    */
-  createTab(id, name, categoryId) {
+  createTab(id, name, categoryId, displayFlag) {
     const tab = document.createElement('button');
     tab.textContent = name;
     tab.dataset.categoryId = categoryId;
@@ -161,7 +162,11 @@ class ProductsPage {
                      (categoryId === this.selectedCategoryId);
 
     // ベーススタイル
-    const baseClass = 'px-5 py-3 text-sm font-medium transition-all duration-200 border-b-2 whitespace-nowrap';
+    let baseClass = 'px-5 py-3 text-sm font-medium transition-all duration-200 border-b-2 whitespace-nowrap';
+
+    if(displayFlag === '0'){
+      baseClass += ' bg-gray-200';
+    }
 
     if (isActive) {
       tab.className = `${baseClass} text-blue-600 border-blue-600`;
