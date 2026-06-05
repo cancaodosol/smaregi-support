@@ -22,6 +22,7 @@
   "scripts": {
     "dev": "netlify dev",
     "build": "echo 'No build step required'",
+    "test": "node --test tests/",
     "deploy": "netlify deploy --prod"
   },
   "dependencies": {

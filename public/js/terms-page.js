@@ -114,7 +114,13 @@ class TermsPage {
     if (!term) return;
 
     const visibleCategories = (term.categories || []).filter(c => c.displayFlag === '1');
-    const visibleProducts = (term.products || []).filter(p => p.displayFlag === '1');
+    const visibleCategoryIds = new Set(visibleCategories.map(c => c.categoryId));
+
+    // 表示フラグが有効かつ属する部門が非表示でない商品のみ表示する。
+    // 部門未設定（categoryId が falsy）の商品は除外せず表示を維持する。
+    const visibleProducts = (term.products || [])
+      .filter(p => p.displayFlag === '1')
+      .filter(p => !p.categoryId || visibleCategoryIds.has(p.categoryId));
 
     const categoryLines = visibleCategories.map(c => `  ${Utils.escapeHtml(c.categoryName)}`).join('\n');
     const productLines = visibleProducts.map(p => `  ${Utils.escapeHtml(p.productName)}`).join('\n');
