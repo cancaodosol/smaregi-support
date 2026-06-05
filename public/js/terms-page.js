@@ -1,3 +1,27 @@
+/**
+ * 非表示部門に属する商品を除外する。部門未設定（categoryId が falsy）の商品は除外しない。
+ * 適用処理専用: 商品自身の displayFlag によるフィルタは行わない。
+ */
+function filterApplicableProducts(termCategories, termProducts) {
+  const hiddenCategoryIds = new Set(
+    (termCategories || [])
+      .filter(c => c.displayFlag !== '1')
+      .map(c => c.categoryId)
+  );
+  return (termProducts || []).filter(p => !p.categoryId || !hiddenCategoryIds.has(p.categoryId));
+}
+
+/**
+ * termItems のうち、currentMap（idKey → item）と displayFlag が異なるもの、
+ * または currentMap に存在しないものを返す。
+ */
+function diffByDisplayFlag(termItems, currentMap, idKey) {
+  return termItems.filter(item => {
+    const current = currentMap.get(item[idKey]);
+    return !current || current.displayFlag !== item.displayFlag;
+  });
+}
+
 class TermsPage {
   constructor() {
     this.api = new SmaregiAPI();
@@ -151,7 +175,7 @@ class TermsPage {
     document.getElementById('view-modal')?.classList.remove('hidden');
   }
 
-  // 適用: タームの設定をスマレジに書き込む
+  // 適用: タームの設定をスマレジに書き込む（差分のある項目のみ更新）
   async onApplyTerm(termId) {
     const term = this.terms.find(t => t.id === termId);
     if (!term) return;
@@ -162,12 +186,20 @@ class TermsPage {
     try {
       Utils.showLoading(true);
 
-      const categories = term.categories || [];
-      const products = term.products || [];
+      const current = await this.fetchCurrentSmaregiState();
+
+      const currentCategoryMap = new Map(current.categories.map(c => [c.categoryId, c]));
+      const currentProductMap = new Map(current.products.map(p => [p.productId, p]));
+
+      // 非表示部門に属する商品は処理対象から除外する
+      const applicableProducts = filterApplicableProducts(term.categories, term.products);
+
+      const categoriesToUpdate = diffByDisplayFlag(term.categories || [], currentCategoryMap, 'categoryId');
+      const productsToUpdate = diffByDisplayFlag(applicableProducts, currentProductMap, 'productId');
 
       await Promise.all([
-        categories.length > 0 ? this.api.updateCategories(categories) : Promise.resolve(),
-        products.length > 0 ? this.api.updateProducts(products) : Promise.resolve()
+        categoriesToUpdate.length > 0 ? this.api.updateCategories(categoriesToUpdate) : Promise.resolve(),
+        productsToUpdate.length > 0 ? this.api.updateProducts(productsToUpdate) : Promise.resolve()
       ]);
 
       Utils.showSuccess(`ターム「${term.name}」を適用しました。`);
