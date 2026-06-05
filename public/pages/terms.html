@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ターム管理 - スマレジサポート</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <!-- ヘッダー -->
+  <header class="bg-blue-600 text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+      <h1 class="text-xl font-bold">ターム管理</h1>
+      <nav class="flex items-center space-x-4 text-sm">
+        <a href="/pages/products.html" class="hover:text-blue-200 transition">商品</a>
+        <a href="/pages/categories.html" class="hover:text-blue-200 transition">部門</a>
+        <span class="font-medium border-b-2 border-white pb-1">ターム</span>
+        <span class="text-blue-300">|</span>
+        <button id="logout-button" class="hover:text-blue-200 transition">ログアウト</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <!-- メッセージエリア -->
+    <div id="error-message" class="hidden"></div>
+    <div id="success-message" class="hidden"></div>
+
+    <!-- アクションバー -->
+    <div class="bg-white rounded-lg shadow-md p-3 mb-4 flex justify-between items-center">
+      <p class="text-sm text-gray-600">日程・イベントごとの表示設定を保存・適用できます。</p>
+      <button
+        id="new-term-button"
+        class="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition text-sm"
+      >
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        新規作成
+      </button>
+    </div>
+
+    <!-- ターム一覧テーブル -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600">ターム名</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600">更新日</th>
+            <th class="px-4 py-3 text-right text-xs font-medium text-gray-600">操作</th>
+          </tr>
+        </thead>
+        <tbody id="terms-tbody" class="bg-white divide-y divide-gray-200">
+          <!-- JavaScriptで動的に生成 -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ローディング -->
+    <div id="loading" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-8 flex flex-col items-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+        <p class="text-gray-700 font-medium">読み込み中...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- 新規作成モーダル -->
+  <div id="create-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+      <h2 class="text-lg font-bold text-gray-800 mb-4">新規ターム作成</h2>
+      <div class="mb-5">
+        <label class="block text-sm font-medium text-gray-700 mb-1">ターム名</label>
+        <input
+          type="text"
+          id="new-term-name"
+          placeholder="例: 夏祭り"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+        />
+      </div>
+      <div class="flex flex-col gap-2">
+        <button
+          id="save-current-state-button"
+          class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition text-sm font-medium"
+        >
+          現在のスマレジ状況で保存
+        </button>
+        <button
+          id="cancel-create-button"
+          class="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition text-sm"
+        >
+          キャンセル
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 参照モーダル -->
+  <div id="view-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg mx-4 max-h-[80vh] flex flex-col">
+      <div class="flex justify-between items-center mb-4 flex-shrink-0">
+        <h2 id="view-modal-title" class="text-lg font-bold text-gray-800"></h2>
+        <button id="close-view-modal" class="text-gray-400 hover:text-gray-600 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div id="view-modal-content" class="overflow-y-auto text-sm text-gray-800 leading-relaxed"></div>
+    </div>
+  </div>
+
+  <!-- JavaScriptファイル読み込み -->
+  <script src="../js/config.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/utils.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/terms-page.js"></script>
+</body>
+</html>

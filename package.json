@@ -25,6 +25,7 @@
     "deploy": "netlify deploy --prod"
   },
   "dependencies": {
+    "@netlify/blobs": "^10.7.9",
     "netlify-lambda": "^2.0.16",
     "node-fetch": "^2.7.0"
   },

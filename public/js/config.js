@@ -21,7 +21,8 @@ const CONFIG = {
     AUTH: '/.netlify/functions/auth',
     PRODUCTS: '/.netlify/functions/products',
     PRODUCT_IMAGES: '/.netlify/functions/product-images',
-    CATEGORIES: '/.netlify/functions/categories'
+    CATEGORIES: '/.netlify/functions/categories',
+    TERMS: '/.netlify/functions/terms'
   },
 
   // スマレジAPI URL
