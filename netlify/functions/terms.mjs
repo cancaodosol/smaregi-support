@@ -52,7 +52,7 @@ export default async (request) => {
       const body = await request.json();
       const idx = terms.findIndex(t => t.id === body.id);
       if (idx === -1) {
-        return json({ success: false, error: 'タームが見つかりません。' }, 404);
+        return json({ success: false, error: '一括変更設定が見つかりません。' }, 404);
       }
       terms[idx] = {
         ...terms[idx],

@@ -42,7 +42,7 @@ class TermsPage {
       this.terms = data.terms || [];
       this.renderTerms();
     } catch (error) {
-      Utils.showError('タームの読み込みに失敗しました。' + error.message);
+      Utils.showError('一括変更設定の読み込みに失敗しました。' + error.message);
     } finally {
       Utils.showLoading(false);
     }
@@ -59,7 +59,7 @@ class TermsPage {
       tbody.innerHTML = `
         <tr>
           <td colspan="3" class="px-4 py-8 text-center text-gray-500 text-sm">
-            タームがありません。「新規作成」から追加してください。
+            一括変更設定がありません。「新規作成」から追加してください。
           </td>
         </tr>
       `;
@@ -111,7 +111,7 @@ class TermsPage {
     const name = nameInput?.value.trim();
 
     if (!name) {
-      Utils.showError('ターム名を入力してください。');
+      Utils.showError('一括変更設定名を入力してください。');
       return;
     }
 
@@ -123,7 +123,7 @@ class TermsPage {
 
       await this.termsRequest('POST', { name, categories, products });
 
-      Utils.showSuccess(`ターム「${name}」を保存しました。`);
+      Utils.showSuccess(`一括変更設定「${name}」を保存しました。`);
       await this.loadTerms();
     } catch (error) {
       Utils.showError('保存に失敗しました。' + error.message);
@@ -180,7 +180,7 @@ class TermsPage {
     const term = this.terms.find(t => t.id === termId);
     if (!term) return;
 
-    const confirmed = confirm(`ターム「${term.name}」をスマレジに適用します。\n現在のスマレジの表示設定が上書きされます。よろしいですか？`);
+    const confirmed = confirm(`一括変更設定「${term.name}」をスマレジに適用します。\n現在のスマレジの表示設定が上書きされます。よろしいですか？`);
     if (!confirmed) return;
 
     try {
@@ -202,7 +202,7 @@ class TermsPage {
         productsToUpdate.length > 0 ? this.api.updateProducts(productsToUpdate) : Promise.resolve()
       ]);
 
-      Utils.showSuccess(`ターム「${term.name}」を適用しました。`);
+      Utils.showSuccess(`一括変更設定「${term.name}」を適用しました。`);
     } catch (error) {
       Utils.showError('適用に失敗しました。' + error.message);
     } finally {
@@ -215,7 +215,7 @@ class TermsPage {
     const term = this.terms.find(t => t.id === termId);
     if (!term) return;
 
-    const confirmed = confirm(`ターム「${term.name}」を現在のスマレジ状況で上書きします。よろしいですか？`);
+    const confirmed = confirm(`一括変更設定「${term.name}」を現在のスマレジ状況で上書きします。よろしいですか？`);
     if (!confirmed) return;
 
     try {
@@ -225,7 +225,7 @@ class TermsPage {
 
       await this.termsRequest('PUT', { id: termId, categories, products });
 
-      Utils.showSuccess(`ターム「${term.name}」を上書きしました。`);
+      Utils.showSuccess(`一括変更設定「${term.name}」を上書きしました。`);
       await this.loadTerms();
     } catch (error) {
       Utils.showError('上書きに失敗しました。' + error.message);
@@ -239,13 +239,13 @@ class TermsPage {
     const term = this.terms.find(t => t.id === termId);
     if (!term) return;
 
-    const confirmed = confirm(`ターム「${term.name}」を削除します。よろしいですか？`);
+    const confirmed = confirm(`一括変更設定「${term.name}」を削除します。よろしいですか？`);
     if (!confirmed) return;
 
     try {
       Utils.showLoading(true);
       await this.termsRequest('DELETE', null, `?id=${termId}`);
-      Utils.showSuccess(`ターム「${term.name}」を削除しました。`);
+      Utils.showSuccess(`一括変更設定「${term.name}」を削除しました。`);
       await this.loadTerms();
     } catch (error) {
       Utils.showError('削除に失敗しました。' + error.message);
