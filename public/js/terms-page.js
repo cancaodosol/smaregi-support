@@ -239,42 +239,10 @@ class TermsPage {
     return { categories: normalizedCategories, products: normalizedProducts };
   }
 
-  // Terms API への共通リクエスト
+  // Terms API への共通リクエスト（SmaregiAPI.request() を流用）
   async termsRequest(method, body = null, queryString = '') {
-    if (!Auth.isTokenValid()) {
-      const refreshed = await Auth.refreshToken();
-      if (!refreshed) {
-        Utils.showError(CONFIG.MESSAGES.TOKEN_EXPIRED);
-        Auth.logout();
-        throw new Error('Token expired');
-      }
-    }
-
-    const credentials = Auth.getCredentials();
     const url = `${CONFIG.API_ENDPOINTS.TERMS}${queryString}`;
-
-    const options = {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Access-Token': Auth.getToken(),
-        'X-Contract-Id': credentials.contractId,
-        'X-Environment': credentials.environment
-      }
-    };
-
-    if (body && (method === 'POST' || method === 'PUT')) {
-      options.body = JSON.stringify(body);
-    }
-
-    const response = await fetch(url, options);
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || 'APIエラーが発生しました。');
-    }
-
-    return data;
+    return await this.api.request(url, method, body);
   }
 
   openCreateModal() {
